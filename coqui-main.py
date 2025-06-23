@@ -287,7 +287,6 @@ def handle_rvc(gen_files: dict[str,list[str]] = None,r_args:dict[str,str] = None
         # No point for the code below? As it's processed in run_rvc. Is this func needed?
         
         # print('Generated files:',gen_files)
-        rvc_root = rvc_root or 'C:/Users/Kevin/Desktop/stuff/stable-diffusion/TTS/RVC1006Nvidia'
         # good = False
         # rvc_args = r_args or get_default_rvc_args()
         # input_path = input_path or rvc_args['--input_path']
