@@ -2,8 +2,6 @@ import argparse
 import os
 import sys
 
-print("Command-line arguments:", sys.argv)
-
 now_dir = os.getcwd()
 sys.path.append(now_dir)
 import sys
@@ -31,6 +29,7 @@ def arg_parse() -> tuple:
     parser.add_argument("--resample_sr", type=int, default=0, help="resample sr")
     parser.add_argument("--rms_mix_rate", type=float, default=1, help="rms mix rate")
     parser.add_argument("--protect", type=float, default=0.33, help="protect")
+    parser.add_argument("--input_list",nargs='*',type=str,default=[],help="input audio files")
 
     args = parser.parse_args()
     sys.argv = sys.argv[:1]
@@ -39,6 +38,7 @@ def arg_parse() -> tuple:
 
 
 def main():
+    print("Command-line arguments:", sys.argv)
     load_dotenv()
     args = arg_parse()
     config = Config()
@@ -46,10 +46,10 @@ def main():
     config.is_half = args.is_half if args.is_half else config.is_half
     vc = VC(config)
     vc.get_vc(args.model_name)
-    audios = os.listdir(args.input_path)
+    audios = args.input_list if args.input_list else os.listdir(args.input_path)
     for file in tq.tqdm(audios):
         if file.endswith(".wav"):
-            file_path = os.path.join(args.input_path, file)
+            file_path = os.path.join(args.input_path, file) if args.input_path else file
             _, wav_opt = vc.vc_single(
                 0,
                 file_path,
@@ -64,7 +64,9 @@ def main():
                 args.rms_mix_rate,
                 args.protect,
             )
-            out_path = os.path.join(args.opt_path, file)
+            
+            out_path = os.path.join(args.opt_path, os.path.basename(file).replace('.wav','') + '_VC.wav')
+            print(out_path)
             wavfile.write(out_path, wav_opt[0], wav_opt[1])
 
 

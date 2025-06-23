@@ -158,8 +158,15 @@ class VC:
         rms_mix_rate,
         protect,
     ):
+        # My code
+        logging.info('INPUT SINGLE: ' + str(input_audio_path))
         if input_audio_path is None:
             return "You need to upload an audio", None
+        # For single vc file dropping
+        if str(input_audio_path.__class__) == "<class 'tempfile._TemporaryFileWrapper'>":
+        # Alt if want to import tempfile: if isinstance(input_audio_path,tempfile._TemporaryFileWrapper):
+            logging.info('File dropped: ' + str(input_audio_path.__dict__))
+            input_audio_path = input_audio_path.name
         f0_up_key = int(f0_up_key)
         try:
             audio = load_audio(input_audio_path, 16000)
@@ -223,6 +230,73 @@ class VC:
             info = traceback.format_exc()
             logger.warning(info)
             return info, (None, None)
+        
+        # OG code
+        # if input_audio_path is None:
+        #     return "You need to upload an audio", None
+        # f0_up_key = int(f0_up_key)
+        # try:
+        #     audio = load_audio(input_audio_path, 16000)
+        #     audio_max = np.abs(audio).max() / 0.95
+        #     if audio_max > 1:
+        #         audio /= audio_max
+        #     times = [0, 0, 0]
+
+        #     if self.hubert_model is None:
+        #         self.hubert_model = load_hubert(self.config)
+
+        #     if file_index:
+        #         file_index = (
+        #             file_index.strip(" ")
+        #             .strip('"')
+        #             .strip("\n")
+        #             .strip('"')
+        #             .strip(" ")
+        #             .replace("trained", "added")
+        #         )
+        #     elif file_index2:
+        #         file_index = file_index2
+        #     else:
+        #         file_index = ""  # 防止小白写错，自动帮他替换掉
+
+        #     audio_opt = self.pipeline.pipeline(
+        #         self.hubert_model,
+        #         self.net_g,
+        #         sid,
+        #         audio,
+        #         input_audio_path,
+        #         times,
+        #         f0_up_key,
+        #         f0_method,
+        #         file_index,
+        #         index_rate,
+        #         self.if_f0,
+        #         filter_radius,
+        #         self.tgt_sr,
+        #         resample_sr,
+        #         rms_mix_rate,
+        #         self.version,
+        #         protect,
+        #         f0_file,
+        #     )
+        #     if self.tgt_sr != resample_sr >= 16000:
+        #         tgt_sr = resample_sr
+        #     else:
+        #         tgt_sr = self.tgt_sr
+        #     index_info = (
+        #         "Index:\n%s." % file_index
+        #         if os.path.exists(file_index)
+        #         else "Index not used."
+        #     )
+        #     return (
+        #         "Success.\n%s\nTime:\nnpy: %.2fs, f0: %.2fs, infer: %.2fs."
+        #         % (index_info, *times),
+        #         (tgt_sr, audio_opt),
+        #     )
+        # except:
+        #     info = traceback.format_exc()
+        #     logger.warning(info)
+        #     return info, (None, None)
 
     def vc_multi(
         self,
@@ -280,7 +354,7 @@ class VC:
                         if format1 in ["wav", "flac"]:
                             sf.write(
                                 "%s/%s.%s"
-                                % (opt_root, os.path.basename(path), format1),
+                                % (opt_root, os.path.basename(path).replace('.wav','') + '_VC', format1),
                                 audio_opt,
                                 tgt_sr,
                             )
