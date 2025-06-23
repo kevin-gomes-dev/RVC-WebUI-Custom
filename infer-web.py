@@ -32,7 +32,6 @@ import threading
 import shutil
 import logging
 
-
 logging.getLogger("numba").setLevel(logging.WARNING)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
@@ -49,7 +48,7 @@ os.environ["TEMP"] = tmp
 warnings.filterwarnings("ignore")
 torch.manual_seed(114514)
 
-
+# VC setup
 config = Config()
 vc = VC(config)
 
@@ -133,6 +132,7 @@ class ToolButton(gr.Button, gr.components.FormComponent):
 weight_root = os.getenv("weight_root")
 weight_uvr5_root = os.getenv("weight_uvr5_root")
 index_root = os.getenv("index_root")
+logger.info('INDEX ' + str(index_root))
 outside_index_root = os.getenv("outside_index_root")
 
 names = []
@@ -842,11 +842,15 @@ with gr.Blocks(title="RVC WebUI") as app:
                                 label=i18n("变调(整数, 半音数量, 升八度12降八度-12)"),
                                 value=0,
                             )
-                            input_audio0 = gr.Textbox(
-                                label=i18n(
-                                    "输入待处理音频文件路径(默认是正确格式示例)"
-                                ),
-                                placeholder="C:\\Users\\Desktop\\audio_example.wav",
+                            # TEST single
+                            # input_audio0 = gr.Textbox(
+                            #     label=i18n(
+                            #         "输入待处理音频文件路径(默认是正确格式示例)"
+                            #     ),
+                            #     placeholder="C:\\Users\\Desktop\\audio_example.wav",
+                            # )
+                            input_audio0 = gr.File(
+                                file_count="single", label=i18n("输入待处理音频文件路径(默认是正确格式示例)")
                             )
                             file_index1 = gr.Textbox(
                                 label=i18n(
@@ -1066,6 +1070,8 @@ with gr.Blocks(title="RVC WebUI") as app:
                             value=1,
                             interactive=True,
                         )
+                # TEST
+                # multiple
                 with gr.Row():
                     dir_input = gr.Textbox(
                         label=i18n(
@@ -1123,6 +1129,8 @@ with gr.Blocks(title="RVC WebUI") as app:
                             label=i18n("输入待处理音频文件夹路径"),
                             placeholder="C:\\Users\\Desktop\\todo-songs",
                         )
+                        # TEST
+                        # multiple
                         wav_inputs = gr.File(
                             file_count="multiple",
                             label=i18n("也可批量输入音频文件, 二选一, 优先读文件夹"),
